@@ -8,11 +8,11 @@ import (
 	tokenbucket "github.com/markus-azer/rate-limit/pkg"
 )
 
-type hamada struct {
+type test struct {
 	store []tokenbucket.TokenBucket
 }
 
-func (h *hamada) FetchToken(id string) (*tokenbucket.TokenBucket, error) {
+func (h *test) FetchToken(id string) (*tokenbucket.TokenBucket, error) {
 	for i := range h.store {
 		if h.store[i].Id == id {
 			return &h.store[i], nil
@@ -21,7 +21,7 @@ func (h *hamada) FetchToken(id string) (*tokenbucket.TokenBucket, error) {
 	return nil, nil
 }
 
-func (h *hamada) RemoveTokens(id string, tokens int) error {
+func (h *test) RemoveTokens(id string, tokens int) error {
 	for i := range h.store {
 		if h.store[i].Id == id {
 			h.store[i].Tokens = h.store[i].Tokens - tokens
@@ -30,13 +30,13 @@ func (h *hamada) RemoveTokens(id string, tokens int) error {
 	return nil
 }
 
-func (h *hamada) CreateBucket(id string, tokens int, startTime time.Time) error {
+func (h *test) CreateBucket(id string, tokens int, startTime time.Time) error {
 	tb := tokenbucket.TokenBucket{Id: id, Version: 1, Tokens: tokens, StartTime: time.Now()}
 	h.store = append(h.store, tb)
 	return nil
 }
 
-func (h *hamada) ResetBucket(id string, version int, tokens int, startTime time.Time) error {
+func (h *test) ResetBucket(id string, version int, tokens int, startTime time.Time) error {
 	for i := range h.store {
 		if h.store[i].Id == id {
 			h.store[i].Tokens = tokens // make sure max don't exceed
@@ -48,7 +48,7 @@ func (h *hamada) ResetBucket(id string, version int, tokens int, startTime time.
 
 func main() {
 
-	ha := new(hamada)
+	ha := new(test)
 
 	rt := tokenbucket.NewRateLimiter(ha, time.Duration(1000), 1)
 
